@@ -100,19 +100,76 @@
   .reveal.animate{opacity:0;transform:translateY(30px);}
   .reveal.animate.visible{opacity:1;transform:translateY(0);}
 
-  /* MODAL */
-  .demo-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
+  /* ── MODAL FIXES ── */
+  .demo-overlay{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(0,0,0,0.88);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    backdrop-filter:blur(10px);
+  }
+  /* FIX 1: use flex (not display:flex inside display:none) via .open class */
   .demo-overlay.open{display:flex;}
-  .demo-modal{background:var(--surface);border:1px solid rgba(0,229,255,0.2);border-radius:20px;width:93vw;max-width:1150px;height:87vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,0.7),0 0 0 1px rgba(0,229,255,0.08);}
-  .demo-modal-header{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.4rem;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0;}
+
+  .demo-modal{
+    background:var(--surface);
+    border:1px solid rgba(0,229,255,0.2);
+    border-radius:20px;
+    width:93vw;max-width:1150px;height:87vh;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+    box-shadow:0 40px 120px rgba(0,0,0,0.7),0 0 0 1px rgba(0,229,255,0.08);
+  }
+  .demo-modal-header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0.9rem 1.4rem;
+    border-bottom:1px solid var(--border);
+    background:var(--surface2);
+    flex-shrink:0;
+  }
   .demo-modal-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--heading);display:flex;align-items:center;gap:0.6rem;}
   .demo-modal-actions{display:flex;align-items:center;gap:0.6rem;}
-  .btn-newtab{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent);background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.25);border-radius:7px;padding:0.35rem 0.85rem;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+  .btn-newtab{font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--accent);background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.25);border-radius:7px;padding:0.35rem 0.85rem;cursor:pointer;text-decoration:none;transition:all 0.2s;display:inline-flex;align-items:center;}
   .btn-newtab:hover{background:rgba(0,229,255,0.18);}
   .btn-close-modal{background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--muted);font-size:1rem;width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
   .btn-close-modal:hover{background:rgba(255,69,58,0.18);color:#ff6b6b;border-color:rgba(255,69,58,0.3);}
-  .demo-modal iframe{flex:1;border:none;width:100%;background:#fff;}
-  .demo-loading{flex:1;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted);}
+
+  /* FIX 2: loading state shown while iframe loads */
+  .demo-loading{
+    display:flex;align-items:center;justify-content:center;
+    flex:1;
+    font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted);
+    gap:0.6rem;
+  }
+  .demo-loading-dot{
+    width:6px;height:6px;background:var(--accent);border-radius:50%;
+    animation:loadingBounce 1.2s ease-in-out infinite;
+  }
+  .demo-loading-dot:nth-child(2){animation-delay:0.2s;}
+  .demo-loading-dot:nth-child(3){animation-delay:0.4s;}
+  @keyframes loadingBounce{0%,80%,100%{transform:scale(0);opacity:0.3;}40%{transform:scale(1);opacity:1;}}
+
+  .demo-iframe-wrap{flex:1;position:relative;display:flex;flex-direction:column;}
+  .demo-modal iframe{position:absolute;inset:0;width:100%;height:100%;border:none;background:#fff;opacity:0;transition:opacity 0.3s;}
+  .demo-modal iframe.loaded{opacity:1;}
+
+  /* FIX 3: "file not found" fallback message */
+  .demo-fallback{
+    display:none;
+    flex:1;flex-direction:column;
+    align-items:center;justify-content:center;
+    gap:1rem;
+    font-family:'DM Mono',monospace;
+    color:var(--muted);
+    font-size:0.82rem;
+    text-align:center;
+    padding:2rem;
+  }
+  .demo-fallback.show{display:flex;}
+  .demo-fallback strong{color:var(--text);font-size:1rem;font-family:'Syne',sans-serif;}
+  .demo-fallback code{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:0.3rem 0.7rem;color:var(--accent);font-size:0.75rem;}
 
   @media(max-width:768px){
     nav{padding:1rem 1.5rem;}.nav-links{display:none;}
@@ -301,7 +358,10 @@
       <div class="availability-badge">Available for opportunities</div>
     </div>
     <div class="contact-info reveal">
-      <div class="contact-item" id="emailCard" style="cursor:pointer" onclick="window.location=this.dataset.h"><div class="contact-item-icon">✉️</div><div><div class="contact-item-label">Email</div><div class="contact-item-val" id="emailDisplay">fahim007alefaji&#x40;gmail&#x2E;com</div></div></div>
+      <a href="mailto:fahim007alefaji@gmail.com" class="contact-item">
+        <div class="contact-item-icon">✉️</div>
+        <div><div class="contact-item-label">Email</div><div class="contact-item-val">fahim007alefaji@gmail.com</div></div>
+      </a>
       <a href="tel:+36704077007" class="contact-item"><div class="contact-item-icon">📞</div><div><div class="contact-item-label">Phone</div><div class="contact-item-val">+36 70 407 7007</div></div></a>
       <a href="https://www.linkedin.com/in/fahim-al-efaji" target="_blank" class="contact-item"><div class="contact-item-icon">💼</div><div><div class="contact-item-label">LinkedIn</div><div class="contact-item-val">linkedin.com/in/fahim-al-efaji</div></div></a>
       <div class="contact-item"><div class="contact-item-icon">📍</div><div><div class="contact-item-label">Location</div><div class="contact-item-val">Budapest, Hungary</div></div></div>
@@ -311,9 +371,13 @@
 
 <footer><span style="color:var(--accent);font-weight:600">Fahim Al Efaji</span> &nbsp;·&nbsp; Analytics Engineer &nbsp;·&nbsp; Budapest, Hungary &nbsp;·&nbsp; Built with precision &amp; passion</footer>
 
-<!-- DEMO MODAL -->
-<div class="demo-overlay" id="demoOverlay" onclick="closeDemoOverlay(event)">
-  <div class="demo-modal" onclick="event.stopPropagation()">
+<!-- ═══════════════════════════════════════════════
+     DEMO MODAL  — fully fixed version
+═══════════════════════════════════════════════ -->
+<div class="demo-overlay" id="demoOverlay">
+  <div class="demo-modal" id="demoModal">
+
+    <!-- Header -->
     <div class="demo-modal-header">
       <div class="demo-modal-title" id="demoTitle">🚀 Project Demo</div>
       <div class="demo-modal-actions">
@@ -321,56 +385,186 @@
         <button class="btn-close-modal" onclick="closeDemo()" title="Close">✕</button>
       </div>
     </div>
-    <iframe id="demoIframe" src="" title="Project Demo" allowfullscreen></iframe>
+
+    <!-- Loading indicator (shown while iframe loads) -->
+    <div class="demo-loading" id="demoLoading">
+      <div class="demo-loading-dot"></div>
+      <div class="demo-loading-dot"></div>
+      <div class="demo-loading-dot"></div>
+      <span style="margin-left:0.5rem">Loading project…</span>
+    </div>
+
+    <!-- Fallback shown when file is missing (404) -->
+    <div class="demo-fallback" id="demoFallback">
+      <strong>Project file not found</strong>
+      <p>Make sure the project HTML files are in the <strong>same folder</strong> as this portfolio file.</p>
+      <p>Expected filename: <code id="demoExpectedFile"></code></p>
+      <p style="margin-top:0.5rem;font-size:0.75rem;color:var(--muted)">
+        You can still open it in a new tab — the file just needs to exist on the server.
+      </p>
+    </div>
+
+    <!-- iframe wrapper -->
+    <div class="demo-iframe-wrap" id="demoIframeWrap" style="display:none;">
+      <iframe
+        id="demoIframe"
+        src=""
+        title="Project Demo"
+        allowfullscreen
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      ></iframe>
+    </div>
+
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // Render email safely (bypass Cloudflare obfuscation)
-  // Render email click handler
-  const emailCard = document.getElementById('emailCard');
-  if(emailCard) emailCard.dataset.h = ['mailto:fahim007alefaji','gmail.com'].join('@');
+<script>
+/* ─────────────────────────────────────────────
+   SCROLL REVEAL — only animate in top-level window
+───────────────────────────────────────────── */
+const reveals = document.querySelectorAll('.reveal');
+if (window.self === window.top) {
+  reveals.forEach(el => el.classList.add('animate'));
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  reveals.forEach(el => observer.observe(el));
+}
 
-  // SCROLL REVEAL — only animate if not inside an iframe
-  const reveals = document.querySelectorAll('.reveal');
-  if (window.self === window.top) {
-    reveals.forEach(el => el.classList.add('animate'));
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, i) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => entry.target.classList.add('visible'), i * 80);
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.05 });
-    reveals.forEach(el => observer.observe(el));
-  }
-
-  // NAV ACTIVE STATE
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-links a');
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 200) current = s.id; });
-    navLinks.forEach(a => { a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : ''; });
+/* ─────────────────────────────────────────────
+   NAV ACTIVE STATE
+───────────────────────────────────────────── */
+const sections  = document.querySelectorAll('section[id]');
+const navLinks  = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 200) current = s.id; });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
   });
+});
 
-  // DEMO MODAL
-  function openDemo(file, title) {
-    const overlay = document.getElementById('demoOverlay');
-    const iframe = document.getElementById('demoIframe');
-    const titleEl = document.getElementById('demoTitle');
-    const tabBtn = document.getElementById('demoNewTabBtn');
-    titleEl.textContent = '🚀 ' + title;
-    iframe.src = file;
-    tabBtn.href = file;
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
+/* ─────────────────────────────────────────────
+   DEMO MODAL — fixed & complete
+───────────────────────────────────────────── */
+const overlay       = document.getElementById('demoOverlay');
+const iframe        = document.getElementById('demoIframe');
+const iframeWrap    = document.getElementById('demoIframeWrap');
+const loadingEl     = document.getElementById('demoLoading');
+const fallbackEl    = document.getElementById('demoFallback');
+const expectedFile  = document.getElementById('demoExpectedFile');
+const titleEl       = document.getElementById('demoTitle');
+const tabBtn        = document.getElementById('demoNewTabBtn');
+
+/**
+ * openDemo(file, title)
+ * Called by every ▶ Live Demo button.
+ */
+function openDemo(file, title) {
+  // Reset state
+  titleEl.textContent       = '🚀 ' + title;
+  tabBtn.href               = file;
+  expectedFile.textContent  = file;
+
+  iframeWrap.style.display  = 'none';
+  fallbackEl.classList.remove('show');
+  loadingEl.style.display   = 'flex';
+  iframe.classList.remove('loaded');
+  iframe.src                = '';          // clear previous src first
+
+  // Open overlay
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Small delay so the browser resets the iframe before setting new src
+  setTimeout(() => { iframe.src = file; }, 60);
+}
+
+/**
+ * FIX: closeDemo — clears iframe src to stop any running scripts/audio
+ */
+function closeDemo() {
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  iframe.src = '';
+  iframeWrap.style.display = 'none';
+  loadingEl.style.display  = 'flex';
+  fallbackEl.classList.remove('show');
+  iframe.classList.remove('loaded');
+}
+
+/**
+ * FIX: closeDemoOverlay — clicking the dark backdrop closes modal
+ * (this function was MISSING in the original code)
+ */
+function closeDemoOverlay(event) {
+  if (event.target === overlay) closeDemo();
+}
+overlay.addEventListener('click', closeDemoOverlay);
+
+/**
+ * FIX: iframe load handler — shows iframe, hides spinner
+ * Also detects 404 / blank pages and shows fallback message
+ */
+iframe.addEventListener('load', function () {
+  // If src is empty (reset), do nothing
+  if (!iframe.src || iframe.src === 'about:blank' || iframe.src === window.location.href) return;
+
+  // Try to detect if the loaded page is an error page
+  let isError = false;
+  try {
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    // Common browser 404 titles
+    const pageTitle = doc.title || '';
+    if (
+      pageTitle === '' ||
+      pageTitle.toLowerCase().includes('not found') ||
+      pageTitle.toLowerCase().includes('404') ||
+      pageTitle.toLowerCase().includes('error')
+    ) {
+      isError = true;
+    }
+    // If body has almost no content it's likely an error page
+    if (doc.body && doc.body.innerText.trim().length < 30) {
+      isError = true;
+    }
+  } catch (e) {
+    // Cross-origin: can't inspect — assume success (won't happen for local files)
+    isError = false;
   }
 
-  function closeDemo() {
-    const overlay = document.getElementById('demoOverlay');
-    const iframe = document.getElementById('demoIframe');
-    overlay.classList.remove('open');
-    iframe.src = '';
-    document.body.style.overflow = '';
+  loadingEl.style.display = 'none';
+
+  if (isError) {
+    fallbackEl.classList.add('show');
+    iframeWrap.style.display = 'none';
+  } else {
+    iframeWrap.style.display = 'flex';
+    // Slight delay for smooth fade-in
+    requestAnimationFrame(() => iframe.classList.add('loaded'));
+  }
+});
+
+/**
+ * FIX: iframe error handler
+ */
+iframe.addEventListener('error', function () {
+  loadingEl.style.display = 'none';
+  fallbackEl.classList.add('show');
+  iframeWrap.style.display = 'none';
+});
+
+/**
+ * FIX: ESC key closes modal
+ */
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && overlay.classList.contains('open')) closeDemo();
+});
+</script>
+</body>
+</html>
